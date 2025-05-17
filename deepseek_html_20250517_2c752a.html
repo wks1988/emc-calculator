@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional EMC calculator for dBm and Watts conversion with real-time calculation">
+    <title>EMC Calculator - dBm/W Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Source+Code+Pro&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3b6978;
+            --success: #27ae60;
+            --error: #e74c3c;
+            --bg-light: #f8f9fa;
+            --border: #dee2e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', system-ui, sans-serif;
+            line-height: 1.6;
+            background: var(--bg-light);
+            color: var(--primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            display: grid;
+            gap: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 500;
+            font-size: 2.25rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+
+        .converter-group {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .converter {
+            padding: 1.75rem;
+            border: 2px solid var(--border);
+            border-radius: 0.75rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .converter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 1.375rem;
+            margin-bottom: 1.25rem;
+            font-weight: 500;
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        input {
+            width: 100%;
+            max-width: 320px;
+            padding: 0.875rem;
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: 'Source Code Pro', monospace;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+
+        .result-box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid transparent;
+        }
+
+        .success {
+            background: #e8f6ef;
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .error {
+            background: #fdedec;
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .formula {
+            font-family: 'Source Code Pro', monospace;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EMC Power Converter</h1>
+        
+        <div class="converter-group">
+            <div class="converter">
+                <h2>dBm to Watts</h2>
+                <div class="input-group">
+                    <input type="number" id="dbmInput" 
+                           placeholder="Enter dBm value" 
+                           step="any"
+                           oninput="dbmToW()">
+                </div>
+                <div class="formula">
+                    Formula: W = 10<sup>(dBm/10)</sup> / 1000
+                </div>
+                <div class="result-box" id="wResult">Result will be shown here</div>
+            </div>
+
+            <div class="converter">
+                <h2>Watts to dBm</h2>
+                <div class="input-group">
+                    <input type="number" id="wInput" 
+                           placeholder="Enter Watts value" 
+                           step="any"
+                           oninput="wToDbm()">
+                </div>
+                <div class="formula">
+                    Formula: dBm = 10 × log<sub>10</sub>(W × 1000)
+                </div>
+                <div class="result-box" id="dbmResult">Result will be shown here</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateDisplay(element, message, isError = false) {
+            element.textContent = message;
+            element.className = `result-box ${isError ? 'error' : 'success'}`;
+        }
+
+        function dbmToW() {
+            const input = document.getElementById('dbmInput');
+            const output = document.getElementById('wResult');
+            const value = parseFloat(input.value);
+
+            if (isNaN(value)) {
+                updateDisplay(output, 'Invalid input: please enter a number', true);
+                return;
+            }
+
+            try {
+                const watts = Math.pow(10, value / 10) / 1000;
+                updateDisplay(output, `${watts.toExponential(3)} Watts`);
+            } catch (error) {
+                updateDisplay(output, 'Calculation error', true);
+            }
+        }
+
+        function wToDbm() {
+            const input = document.getElementById('wInput');
+            const output = document.getElementById('dbmResult');
+            const value = parseFloat(input.value);
+
+            if (isNaN(value)) {
+                updateDisplay(output, 'Invalid input: please enter a number', true);
+                return;
+            }
+
+            if (value <= 0) {
+                updateDisplay(output, 'Value must be greater than 0', true);
+                return;
+            }
+
+            try {
+                const dbm = 10 * Math.log10(value * 1000);
+                updateDisplay(output, `${dbm.toFixed(2)} dBm`);
+            } catch (error) {
+                updateDisplay(output, 'Calculation error', true);
+            }
+        }
+    </script>
+</body>
+</html>
