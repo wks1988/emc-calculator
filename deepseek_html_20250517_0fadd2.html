@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMC计算器 - dBm与W转换</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .converter {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-top: 0;
+        }
+
+        input {
+            padding: 8px;
+            margin: 10px 0;
+            width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .result {
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .formula {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>电磁兼容（EMC）计算器</h1>
+        
+        <div class="converter">
+            <h2>dBm 转 瓦特 (W)</h2>
+            <input type="number" id="dbmInput" placeholder="输入 dBm 值" step="any" oninput="dbmToW()">
+            <div class="formula">公式：W = 10<sup>(dBm/10)</sup> / 1000</div>
+            <div class="result" id="wResult">结果将在此显示</div>
+        </div>
+
+        <div class="converter">
+            <h2>瓦特 (W) 转 dBm</h2>
+            <input type="number" id="wInput" placeholder="输入 W 值" step="any" oninput="wToDbm()">
+            <div class="formula">公式：dBm = 10 × log<sub>10</sub>(W × 1000)</div>
+            <div class="result" id="dbmResult">结果将在此显示</div>
+        </div>
+    </div>
+
+    <script>
+        function dbmToW() {
+            const dbmInput = document.getElementById('dbmInput');
+            const resultElement = document.getElementById('wResult');
+            const value = parseFloat(dbmInput.value);
+
+            if (isNaN(value)) {
+                resultElement.textContent = '请输入有效数字';
+                resultElement.style.color = '#e74c3c';
+                return;
+            }
+
+            const watts = Math.pow(10, value / 10) / 1000;
+            resultElement.textContent = `${watts.toExponential(3)} W`;
+            resultElement.style.color = '#27ae60';
+        }
+
+        function wToDbm() {
+            const wInput = document.getElementById('wInput');
+            const resultElement = document.getElementById('dbmResult');
+            const value = parseFloat(wInput.value);
+
+            if (isNaN(value)) {
+                resultElement.textContent = '请输入有效数字';
+                resultElement.style.color = '#e74c3c';
+                return;
+            }
+
+            if (value <= 0) {
+                resultElement.textContent = '功率值必须大于0';
+                resultElement.style.color = '#e74c3c';
+                return;
+            }
+
+            const dbm = 10 * Math.log10(value * 1000);
+            resultElement.textContent = `${dbm.toFixed(2)} dBm`;
+            resultElement.style.color = '#27ae60';
+        }
+    </script>
+</body>
+</html>
