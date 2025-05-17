@@ -171,52 +171,56 @@
         </div>
     </div>
 
-    <script>
-        function updateDisplay(element, message, isError = false) {
-            element.textContent = message;
-            element.className = `result-box ${isError ? 'error' : 'success'}`;
+<script>
+    function updateDisplay(element, message, isError = false) {
+        element.textContent = message;
+        element.className = `result-box ${isError ? 'error' : 'success'}`;
+    }
+
+    function dbmToW() {
+        const input = document.getElementById('dbmInput');
+        const output = document.getElementById('wResult');
+        const value = parseFloat(input.value);
+
+        if (isNaN(value)) {
+            updateDisplay(output, 'Invalid input: please enter a number', true);
+            return;
         }
 
-        function dbmToW() {
-            const input = document.getElementById('dbmInput');
-            const output = document.getElementById('wResult');
-            const value = parseFloat(input.value);
+        try {
+            const watts = Math.pow(10, value / 10) / 1000;
+            const formatted = (watts < 0.001) 
+                ? watts.toExponential(3) 
+                : watts.toFixed(3);
+            
+            updateDisplay(output, `${formatted} W`);
+        } catch (error) {
+            updateDisplay(output, 'Calculation error', true);
+        }
+    }
 
-            if (isNaN(value)) {
-                updateDisplay(output, 'Invalid input: please enter a number', true);
-                return;
-            }
+    function wToDbm() {
+        const input = document.getElementById('wInput');
+        const output = document.getElementById('dbmResult');
+        const value = parseFloat(input.value);
 
-            try {
-                const watts = Math.pow(10, value / 10) / 1000;
-                updateDisplay(output, `${watts.toExponential(3)} Watts`);
-            } catch (error) {
-                updateDisplay(output, 'Calculation error', true);
-            }
+        if (isNaN(value)) {
+            updateDisplay(output, 'Invalid input: please enter a number', true);
+            return;
         }
 
-        function wToDbm() {
-            const input = document.getElementById('wInput');
-            const output = document.getElementById('dbmResult');
-            const value = parseFloat(input.value);
-
-            if (isNaN(value)) {
-                updateDisplay(output, 'Invalid input: please enter a number', true);
-                return;
-            }
-
-            if (value <= 0) {
-                updateDisplay(output, 'Value must be greater than 0', true);
-                return;
-            }
-
-            try {
-                const dbm = 10 * Math.log10(value * 1000);
-                updateDisplay(output, `${dbm.toFixed(2)} dBm`);
-            } catch (error) {
-                updateDisplay(output, 'Calculation error', true);
-            }
+        if (value <= 0) {
+            updateDisplay(output, 'Value must be greater than 0', true);
+            return;
         }
-    </script>
+
+        try {
+            const dbm = 10 * Math.log10(value * 1000);
+            updateDisplay(output, `${dbm.toFixed(2)} dBm`);
+        } catch (error) {
+            updateDisplay(output, 'Calculation error', true);
+        }
+    }
+</script>
 </body>
 </html>
