@@ -190,8 +190,8 @@
         try {
             const watts = Math.pow(10, value / 10) / 1000;
             const formatted = (watts < 0.001) 
-                ? watts.toExponential(3) 
-                : watts.toFixed(3);
+                ? watts.toExponential(4) 
+                : watts.toFixed(4);
             
             updateDisplay(output, `${formatted} W`);
         } catch (error) {
